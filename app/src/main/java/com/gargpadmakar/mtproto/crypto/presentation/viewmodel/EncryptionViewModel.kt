@@ -33,11 +33,7 @@ class EncryptionViewModel(
     }
 
     private fun initSessionKey() {
-        val authKeyId = generateAuthKeyUseCase(
-            peerPublicValue = java.math.BigInteger.valueOf(3), // Dummy peer for self-contained demo or generate
-            privateExponent = java.math.BigInteger.valueOf(5)
-        ).getOrNull()?.authKeyId ?: ByteArray(8)
-
+        val authKeyId = com.gargpadmakar.mtproto.crypto.data.crypto.MTProtoKdf().calculateAuthKeyId(activeAuthKey)
         keyManager.storeAuthKey(authKeyId, activeAuthKey)
 
         _uiState.update {

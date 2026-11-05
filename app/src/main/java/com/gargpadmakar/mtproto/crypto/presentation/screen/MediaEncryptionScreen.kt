@@ -24,6 +24,8 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -59,9 +61,9 @@ fun MediaEncryptionScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp, vertical = 12.dp)
             .verticalScroll(scrollState),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         SectionHeader(
             title = "Secret Chat Media Encryption",
@@ -71,7 +73,10 @@ fun MediaEncryptionScreen(
         // File Selector Button
         OutlinedButton(
             onClick = { pickerLauncher.launch(arrayOf("*/*")) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            shape = RoundedCornerShape(12.dp)
         ) {
             Icon(imageVector = Icons.Default.FileOpen, contentDescription = "Pick file")
             Spacer(modifier = Modifier.size(8.dp))
@@ -79,25 +84,48 @@ fun MediaEncryptionScreen(
         }
 
         uiState.selectedFileName?.let { name ->
-            CryptoInfoCard(
-                label = "Selected Media",
-                value = "$name (${uiState.selectedFileSize} bytes, ${uiState.selectedMimeType})"
-            )
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+                shape = RoundedCornerShape(14.dp)
+            ) {
+                Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(
+                        text = "Selected File",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                    Text(
+                        text = name,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    val sizeFormatted = formatBytes(uiState.selectedFileSize)
+                    Text(
+                        text = "$sizeFormatted • ${uiState.selectedMimeType}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
 
             // Progress Bar
             if (uiState.isProcessing) {
                 Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                     LinearProgressIndicator(
                         progress = { uiState.progressFraction },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .clip(RoundedCornerShape(4.dp))
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "${uiState.bytesProcessed} / ${uiState.totalBytes} bytes",
+                            text = "${formatBytes(uiState.bytesProcessed)} / ${formatBytes(uiState.totalBytes)}",
                             style = MaterialTheme.typography.bodySmall
                         )
                         Text(
@@ -110,7 +138,10 @@ fun MediaEncryptionScreen(
                 Button(
                     onClick = { viewModel.cancelOperation() },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Icon(imageVector = Icons.Default.Cancel, contentDescription = "Cancel")
                     Spacer(modifier = Modifier.size(8.dp))
@@ -123,7 +154,10 @@ fun MediaEncryptionScreen(
                 ) {
                     Button(
                         onClick = { viewModel.startMediaEncryption() },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp),
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         Icon(imageVector = Icons.Default.Lock, contentDescription = "Encrypt Media")
                         Spacer(modifier = Modifier.size(6.dp))
@@ -133,7 +167,10 @@ fun MediaEncryptionScreen(
                     if (uiState.encryptedFilePath != null) {
                         Button(
                             onClick = { viewModel.startMediaDecryption() },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(48.dp),
+                            shape = RoundedCornerShape(12.dp)
                         ) {
                             Icon(imageVector = Icons.Default.LockOpen, contentDescription = "Decrypt Media")
                             Spacer(modifier = Modifier.size(6.dp))
@@ -180,18 +217,18 @@ fun MediaEncryptionScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.8f))
-                    .padding(12.dp)
+                    .padding(14.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = "Verified",
                         tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(22.dp)
+                        modifier = Modifier.size(24.dp)
                     )
-                    Spacer(modifier = Modifier.size(8.dp))
+                    Spacer(modifier = Modifier.size(10.dp))
                     Text(
                         text = "Lossless Round-Trip Verified: Decrypted file perfectly matches original file size and byte structure.",
                         style = MaterialTheme.typography.bodyMedium,
@@ -205,3 +242,9 @@ fun MediaEncryptionScreen(
     }
 }
 
+private fun formatBytes(bytes: Long): String {
+    if (bytes < 1024) return "$bytes B"
+    val exp = (Math.log(bytes.toDouble()) / Math.log(1024.0)).toInt()
+    val pre = "KMGTPE"[exp - 1]
+    return String.format("%.1f %sB", bytes / Math.pow(1024.0, exp.toDouble()), pre)
+}

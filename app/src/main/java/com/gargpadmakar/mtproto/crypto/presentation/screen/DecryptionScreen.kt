@@ -30,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.gargpadmakar.mtproto.crypto.domain.model.EncryptionDirection
 import com.gargpadmakar.mtproto.crypto.presentation.components.CryptoInfoCard
@@ -48,9 +49,9 @@ fun DecryptionScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp, vertical = 12.dp)
             .verticalScroll(scrollState),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         SectionHeader(
             title = "MTProto 2.0 Decryption",
@@ -63,21 +64,42 @@ fun DecryptionScreen(
             value = uiState.authKeyHex.ifEmpty { "Synchronized with active session" }
         )
 
-        // Direction Selector
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        // Direction Selector (50% - 50% Full Width Row)
+        Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                text = "Direction (KDF Offset)",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 FilterChip(
                     selected = uiState.direction == EncryptionDirection.CLIENT_TO_SERVER,
                     onClick = { viewModel.onDirectionChanged(EncryptionDirection.CLIENT_TO_SERVER) },
-                    label = { Text("Client->Server") }
+                    label = {
+                        Text(
+                            text = "Client -> Server",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    },
+                    modifier = Modifier.weight(1f)
                 )
                 FilterChip(
                     selected = uiState.direction == EncryptionDirection.SERVER_TO_CLIENT,
                     onClick = { viewModel.onDirectionChanged(EncryptionDirection.SERVER_TO_CLIENT) },
-                    label = { Text("Server->Client") }
+                    label = {
+                        Text(
+                            text = "Server -> Client",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    },
+                    modifier = Modifier.weight(1f)
                 )
             }
         }
@@ -89,13 +111,17 @@ fun DecryptionScreen(
             label = { Text("Encrypted Wire Ciphertext (Base64)") },
             placeholder = { Text("Paste Base64 MTProto 2.0 ciphertext here...") },
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
             minLines = 3,
             maxLines = 6
         )
 
         Button(
             onClick = { viewModel.decryptText() },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            shape = RoundedCornerShape(12.dp),
             enabled = !uiState.isLoading && uiState.inputCiphertextBase64.isNotBlank()
         ) {
             if (uiState.isLoading) {
@@ -120,18 +146,18 @@ fun DecryptionScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f))
-                        .padding(12.dp)
+                        .padding(14.dp)
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
                             contentDescription = "Verified",
                             tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(22.dp)
+                            modifier = Modifier.size(24.dp)
                         )
-                        Spacer(modifier = Modifier.size(8.dp))
+                        Spacer(modifier = Modifier.size(10.dp))
                         Text(
                             text = "msg_key integrity verified in constant-time. No tampering detected.",
                             style = MaterialTheme.typography.bodyMedium,
@@ -164,4 +190,3 @@ fun DecryptionScreen(
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
-
