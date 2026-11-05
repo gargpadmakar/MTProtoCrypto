@@ -26,3 +26,4 @@ interface MTProtoApiRepository {
         maxClockSkewMs: Long = 60000L
     ): DecryptedApiPayload
 }
+

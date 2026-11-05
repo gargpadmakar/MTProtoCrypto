@@ -184,3 +184,4 @@ object AntiTampering {
         return !isDeviceRooted() && !isDebuggerAttached() && !isFridaDetected()
     }
 }
+

@@ -120,3 +120,4 @@ These approaches fail against modern reverse engineering tools:
 3. **Replay Window Enforcement:** Every payload contains a dynamic 64-bit timestamp and 128-bit cryptographic nonce. The server rejects any replayed packets or packets outside the allowed clock skew window ($< 60$ seconds).
 4. **Anti-Traffic Analysis Padding:** MTProto 2.0 injects 12 to 1024 random padding bytes, masking payload length and preventing statistical traffic analysis.
 5. **Memory Sanitization:** Byte arrays and keys are immediately zeroized in-memory after use.
+

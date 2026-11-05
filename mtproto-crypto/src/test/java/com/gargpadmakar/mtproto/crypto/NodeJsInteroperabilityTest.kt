@@ -27,3 +27,4 @@ class NodeJsInteroperabilityTest {
         assertEquals(originalJson, decrypted.utf8String)
     }
 }
+

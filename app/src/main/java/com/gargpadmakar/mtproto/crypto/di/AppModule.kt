@@ -1,5 +1,6 @@
 package com.gargpadmakar.mtproto.crypto.di
 
+import com.gargpadmakar.mtproto.crypto.presentation.viewmodel.ApiCryptoViewModel
 import com.gargpadmakar.mtproto.crypto.presentation.viewmodel.DecryptionViewModel
 import com.gargpadmakar.mtproto.crypto.presentation.viewmodel.EncryptionViewModel
 import com.gargpadmakar.mtproto.crypto.presentation.viewmodel.MediaEncryptionViewModel
@@ -14,9 +15,9 @@ val presentationModule: Module = module {
     viewModel { DecryptionViewModel(get(), get()) }
     viewModel { MediaEncryptionViewModel(androidApplication(), get(), get()) }
     viewModel { SecurityInfoViewModel() }
+    viewModel { ApiCryptoViewModel(get(), get(), get()) }
 }
 
 val appModules: List<Module> = listOf(
     presentationModule
 )
-

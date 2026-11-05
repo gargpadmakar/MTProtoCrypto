@@ -2,6 +2,7 @@ package com.gargpadmakar.mtproto.crypto.presentation.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CloudSync
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.PermMedia
@@ -20,10 +21,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.gargpadmakar.mtproto.crypto.presentation.screen.ApiCryptoScreen
 import com.gargpadmakar.mtproto.crypto.presentation.screen.DecryptionScreen
 import com.gargpadmakar.mtproto.crypto.presentation.screen.EncryptionScreen
 import com.gargpadmakar.mtproto.crypto.presentation.screen.MediaEncryptionScreen
 import com.gargpadmakar.mtproto.crypto.presentation.screen.SecurityInfoScreen
+import com.gargpadmakar.mtproto.crypto.presentation.viewmodel.ApiCryptoViewModel
 import com.gargpadmakar.mtproto.crypto.presentation.viewmodel.DecryptionViewModel
 import com.gargpadmakar.mtproto.crypto.presentation.viewmodel.EncryptionViewModel
 import com.gargpadmakar.mtproto.crypto.presentation.viewmodel.MediaEncryptionViewModel
@@ -33,6 +36,7 @@ import org.koin.androidx.compose.koinViewModel
 enum class AppDestination(val label: String, val icon: ImageVector) {
     ENCRYPTION("Encrypt", Icons.Default.Lock),
     DECRYPTION("Decrypt", Icons.Default.LockOpen),
+    API("API Crypto", Icons.Default.CloudSync),
     MEDIA("Media", Icons.Default.PermMedia),
     SECURITY("Security", Icons.Default.Security)
 }
@@ -41,6 +45,7 @@ enum class AppDestination(val label: String, val icon: ImageVector) {
 fun AppNavigation(
     encryptionViewModel: EncryptionViewModel = koinViewModel(),
     decryptionViewModel: DecryptionViewModel = koinViewModel(),
+    apiCryptoViewModel: ApiCryptoViewModel = koinViewModel(),
     mediaViewModel: MediaEncryptionViewModel = koinViewModel(),
     securityViewModel: SecurityInfoViewModel = koinViewModel()
 ) {
@@ -84,6 +89,10 @@ fun AppNavigation(
                 viewModel = decryptionViewModel,
                 modifier = Modifier.padding(innerPadding)
             )
+            AppDestination.API -> ApiCryptoScreen(
+                viewModel = apiCryptoViewModel,
+                modifier = Modifier.padding(innerPadding)
+            )
             AppDestination.MEDIA -> MediaEncryptionScreen(
                 viewModel = mediaViewModel,
                 modifier = Modifier.padding(innerPadding)
@@ -95,4 +104,3 @@ fun AppNavigation(
         }
     }
 }
-
