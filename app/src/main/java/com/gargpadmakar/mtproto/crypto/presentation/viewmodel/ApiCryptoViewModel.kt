@@ -32,13 +32,12 @@ class ApiCryptoViewModel(
     init {
         // Initialize dynamic in-memory 256-byte auth key
         SecureRandom().nextBytes(sessionAuthKey)
-        val authKeyId = java.nio.ByteBuffer.wrap(
-            com.gargpadmakar.mtproto.crypto.data.crypto.MTProtoKdf().calculateAuthKeyId(sessionAuthKey)
-        ).long
+        val authKeyIdBytes = com.gargpadmakar.mtproto.crypto.data.crypto.MTProtoKdf().calculateAuthKeyId(sessionAuthKey)
+        val hexString = authKeyIdBytes.joinToString("") { "%02X".format(it) }
 
         _uiState.update {
             it.copy(
-                authKeyIdHex = "0x" + authKeyId.toString(16).uppercase(),
+                authKeyIdHex = "0x$hexString",
                 isEnvironmentSafe = AntiTampering.isEnvironmentSafe()
             )
         }
@@ -207,13 +206,12 @@ class ApiCryptoViewModel(
 
     fun regenerateSessionKey() {
         SecureRandom().nextBytes(sessionAuthKey)
-        val authKeyId = java.nio.ByteBuffer.wrap(
-            com.gargpadmakar.mtproto.crypto.data.crypto.MTProtoKdf().calculateAuthKeyId(sessionAuthKey)
-        ).long
+        val authKeyIdBytes = com.gargpadmakar.mtproto.crypto.data.crypto.MTProtoKdf().calculateAuthKeyId(sessionAuthKey)
+        val hexString = authKeyIdBytes.joinToString("") { "%02X".format(it) }
 
         _uiState.update {
             it.copy(
-                authKeyIdHex = "0x" + authKeyId.toString(16).uppercase(),
+                authKeyIdHex = "0x$hexString",
                 encryptedPayload = null,
                 encryptedJsonWire = "",
                 decryptedResponseJson = "",
@@ -227,3 +225,4 @@ class ApiCryptoViewModel(
         SecureBytes.wipe(sessionAuthKey)
     }
 }
+

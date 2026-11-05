@@ -2,6 +2,7 @@ package com.gargpadmakar.mtproto.crypto.presentation.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -23,6 +25,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -97,6 +100,7 @@ fun ApiCryptoScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
+                        modifier = Modifier.weight(1f, fill = false),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
@@ -106,24 +110,25 @@ fun ApiCryptoScreen(
                             tint = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                         Text(
-                            text = "Dynamic Ephemeral Session",
-                            style = MaterialTheme.typography.titleSmall,
+                            text = "Ephemeral Session",
+                            style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                     }
 
-                    OutlinedButton(
+                    FilledTonalButton(
                         onClick = { viewModel.regenerateSessionKey() },
-                        shape = RoundedCornerShape(8.dp)
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
-                            contentDescription = "Re-negotiate",
+                            contentDescription = "New Key",
                             modifier = Modifier.size(16.dp)
                         )
-                        Spacer(modifier = Modifier.size(4.dp))
-                        Text(text = "Re-negotiate", style = MaterialTheme.typography.labelSmall)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(text = "New Key", style = MaterialTheme.typography.labelMedium)
                     }
                 }
 
@@ -259,17 +264,19 @@ fun ApiCryptoScreen(
                 OutlinedButton(
                     onClick = { viewModel.testTamperDetection() },
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
                 ) {
-                    Text(text = "Test Tampering (Flip Bit)", style = MaterialTheme.typography.labelSmall)
+                    Text(text = "Tamper Test", style = MaterialTheme.typography.labelMedium)
                 }
 
                 OutlinedButton(
                     onClick = { viewModel.testReplayAttackDetection() },
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
                 ) {
-                    Text(text = "Test Replay Attack", style = MaterialTheme.typography.labelSmall)
+                    Text(text = "Replay Test", style = MaterialTheme.typography.labelMedium)
                 }
             }
         }

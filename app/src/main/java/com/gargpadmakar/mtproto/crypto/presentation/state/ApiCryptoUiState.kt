@@ -14,3 +14,4 @@ data class ApiCryptoUiState(
     val serverResponseStatus: String? = null,
     val isEnvironmentSafe: Boolean = true
 )
+
