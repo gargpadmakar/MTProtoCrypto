@@ -16,15 +16,15 @@ Designed with **Clean Architecture**, **MVVM**, the **UseCase Pattern**, **Repos
 ```mermaid
 graph TD
     subgraph UI ["Presentation Layer (Jetpack Compose M3)"]
-        ES[EncryptionScreen]
-        DS[DecryptionScreen]
-        MS[MediaEncryptionScreen]
-        SS[SecurityInfoScreen]
+        ES["Encryption<br/>Screen"]
+        DS["Decryption<br/>Screen"]
+        MS["Media Encryption<br/>Screen"]
+        SS["Security Info<br/>Screen"]
         
-        EV[EncryptionViewModel]
-        DV[DecryptionViewModel]
-        MV[MediaEncryptionViewModel]
-        SV[SecurityInfoViewModel]
+        EV["Encryption<br/>ViewModel"]
+        DV["Decryption<br/>ViewModel"]
+        MV["Media Encryption<br/>ViewModel"]
+        SV["Security Info<br/>ViewModel"]
         
         ES --> EV
         DS --> DV
@@ -33,19 +33,19 @@ graph TD
     end
 
     subgraph Domain ["Domain Layer (Pure Kotlin)"]
-        ET[EncryptTextUseCase]
-        DT[DecryptTextUseCase]
-        EM[EncryptMediaUseCase]
-        DM[DecryptMediaUseCase]
-        DA[DeriveAesKeyUseCase]
-        CM[CalculateMessageKeyUseCase]
-        GA[GenerateAuthorizationKeyUseCase]
-        VD[ValidateDhParametersUseCase]
+        ET["EncryptText<br/>UseCase"]
+        DT["DecryptText<br/>UseCase"]
+        EM["EncryptMedia<br/>UseCase"]
+        DM["DecryptMedia<br/>UseCase"]
+        DA["DeriveAesKey<br/>UseCase"]
+        CM["CalculateMessageKey<br/>UseCase"]
+        GA["GenerateAuthKey<br/>UseCase"]
+        VD["ValidateDhParams<br/>UseCase"]
         
-        CR[MTProtoCipherRepository]
-        KR[MTProtoKdfRepository]
-        HR[MTProtoHandshakeRepository]
-        MR[MTProtoMediaRepository]
+        CR["MTProtoCipher<br/>Repository"]
+        KR["MTProtoKdf<br/>Repository"]
+        HR["MTProtoHandshake<br/>Repository"]
+        MR["MTProtoMedia<br/>Repository"]
         
         EV --> ET
         EV --> GA
@@ -64,16 +64,16 @@ graph TD
     end
 
     subgraph Data ["Data Layer (Cryptographic Engines)"]
-        CRI[MTProtoCipherRepositoryImpl]
-        KRI[MTProtoKdfRepositoryImpl]
-        HRI[MTProtoHandshakeRepositoryImpl]
-        MRI[MTProtoMediaRepositoryImpl]
+        CRI["MTProtoCipher<br/>RepoImpl"]
+        KRI["MTProtoKdf<br/>RepoImpl"]
+        HRI["MTProtoHandshake<br/>RepoImpl"]
+        MRI["MTProtoMedia<br/>RepoImpl"]
         
-        MC[MessageCipher]
-        IGE["AesIgeCipher (AES-256-IGE)"]
-        KDF["MTProtoKdf (SHA-256)"]
-        DH["DhHandshakeEngine (2048-bit DH)"]
-        MED["MediaCipher (Streaming AES-IGE)"]
+        MC["MessageCipher<br/>(MTProto 2.0)"]
+        IGE["AesIgeCipher<br/>(AES-256-IGE)"]
+        KDF["MTProtoKdf<br/>(SHA-256)"]
+        DH["DhHandshakeEngine<br/>(2048-bit DH)"]
+        MED["MediaCipher<br/>(Streaming IGE)"]
         
         CR -.-> CRI
         KR -.-> KRI
@@ -88,8 +88,8 @@ graph TD
     end
 
     subgraph Security ["Security Primitives"]
-        SB["SecureBytes (Zeroization & Constant-Time)"]
-        KM["KeyManager (Thread-Safe Auth Store)"]
+        SB["SecureBytes<br/>(Zeroization & Safe)"]
+        KM["KeyManager<br/>(Thread-Safe Store)"]
         MC --> SB
         IGE --> SB
         MED --> SB
