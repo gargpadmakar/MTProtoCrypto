@@ -16,14 +16,14 @@ Designed with **Clean Architecture**, **MVVM**, the **UseCase Pattern**, **Repos
 ```mermaid
 graph TD
     subgraph UI ["Presentation Layer (Jetpack Compose M3)"]
-        ES["Encryption<br/>Screen"]
-        DS["Decryption<br/>Screen"]
-        MS["Media Encryption<br/>Screen"]
+        ES["Text Encrypt<br/>Screen"]
+        DS["Text Decrypt<br/>Screen"]
+        MS["Media Encrypt<br/>Screen"]
         SS["Security Info<br/>Screen"]
         
-        EV["Encryption<br/>ViewModel"]
-        DV["Decryption<br/>ViewModel"]
-        MV["Media Encryption<br/>ViewModel"]
+        EV["Text Encrypt<br/>ViewModel"]
+        DV["Text Decrypt<br/>ViewModel"]
+        MV["Media Encrypt<br/>ViewModel"]
         SV["Security Info<br/>ViewModel"]
         
         ES --> EV
@@ -33,19 +33,19 @@ graph TD
     end
 
     subgraph Domain ["Domain Layer (Pure Kotlin)"]
-        ET["EncryptText<br/>UseCase"]
-        DT["DecryptText<br/>UseCase"]
-        EM["EncryptMedia<br/>UseCase"]
-        DM["DecryptMedia<br/>UseCase"]
-        DA["DeriveAesKey<br/>UseCase"]
-        CM["CalculateMessageKey<br/>UseCase"]
-        GA["GenerateAuthKey<br/>UseCase"]
-        VD["ValidateDhParams<br/>UseCase"]
+        ET["Encrypt Text<br/>UseCase"]
+        DT["Decrypt Text<br/>UseCase"]
+        EM["Encrypt Media<br/>UseCase"]
+        DM["Decrypt Media<br/>UseCase"]
+        DA["Derive AES<br/>UseCase"]
+        CM["Calc MsgKey<br/>UseCase"]
+        GA["Gen AuthKey<br/>UseCase"]
+        VD["Validate DH<br/>UseCase"]
         
-        CR["MTProtoCipher<br/>Repository"]
-        KR["MTProtoKdf<br/>Repository"]
-        HR["MTProtoHandshake<br/>Repository"]
-        MR["MTProtoMedia<br/>Repository"]
+        CR["Cipher<br/>Repository"]
+        KR["KDF<br/>Repository"]
+        HR["Handshake<br/>Repository"]
+        MR["Media<br/>Repository"]
         
         EV --> ET
         EV --> GA
@@ -64,16 +64,16 @@ graph TD
     end
 
     subgraph Data ["Data Layer (Cryptographic Engines)"]
-        CRI["MTProtoCipher<br/>RepoImpl"]
-        KRI["MTProtoKdf<br/>RepoImpl"]
-        HRI["MTProtoHandshake<br/>RepoImpl"]
-        MRI["MTProtoMedia<br/>RepoImpl"]
+        CRI["Cipher<br/>RepoImpl"]
+        KRI["KDF<br/>RepoImpl"]
+        HRI["Handshake<br/>RepoImpl"]
+        MRI["Media<br/>RepoImpl"]
         
-        MC["MessageCipher<br/>(MTProto 2.0)"]
-        IGE["AesIgeCipher<br/>(AES-256-IGE)"]
-        KDF["MTProtoKdf<br/>(SHA-256)"]
-        DH["DhHandshakeEngine<br/>(2048-bit DH)"]
-        MED["MediaCipher<br/>(Streaming IGE)"]
+        MC["Message Cipher<br/>(MTProto 2.0)"]
+        IGE["AES-IGE Cipher<br/>(256-bit)"]
+        KDF["KDF Engine<br/>(SHA-256)"]
+        DH["DH Engine<br/>(2048-bit)"]
+        MED["Media Cipher<br/>(Stream IGE)"]
         
         CR -.-> CRI
         KR -.-> KRI
@@ -88,8 +88,8 @@ graph TD
     end
 
     subgraph Security ["Security Primitives"]
-        SB["SecureBytes<br/>(Zeroization & Safe)"]
-        KM["KeyManager<br/>(Thread-Safe Store)"]
+        SB["SecureBytes<br/>(Zeroize)"]
+        KM["KeyManager<br/>(Key Store)"]
         MC --> SB
         IGE --> SB
         MED --> SB
