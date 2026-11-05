@@ -126,6 +126,60 @@ The **MTProtoCrypto SDK** is suitable for any Android application requiring Tele
 
 ---
 
+## Sample Application User Guide
+
+The project includes a production-grade Jetpack Compose Material 3 sample application (`:app`) demonstrating the MTProtoCrypto SDK capabilities in real-time.
+
+The application has four primary screens accessible via the bottom navigation bar:
+
+### 1. Encrypt Tab (Text Message Encryption)
+- **Active Session Key:** Displays the active 2048-bit Diffie-Hellman authorization key (`auth_key`) and its calculated 64-bit ID (`auth_key_id`).
+- **New DH Session:** Tap "New DH" to generate a fresh 2048-bit session keypair on demand.
+- **Direction Selector:** Select either "Client -> Server" (KDF offset $x=0$) or "Server -> Client" (KDF offset $x=8$).
+- **Plaintext Input:** Type or paste your message.
+- **Encrypt Message:** Tap the button to encrypt. The SDK automatically:
+  1. Packs the payload with a 4-byte length prefix.
+  2. Appends between 12 and 1024 bytes of cryptographically secure random padding (16-byte alignment).
+  3. Derives the 128-bit `msg_key` from SHA-256.
+  4. Derives the 256-bit AES key and 256-bit IGE IV using MTProto 2.0 KDF.
+  5. Performs AES-256-IGE encryption.
+- **Output:** Displays the 128-bit `msg_key` and the full wire-format Base64 ciphertext with one-tap clipboard copy buttons.
+
+### 2. Decrypt Tab (Text Decryption & Verification)
+- **Automatic Synchronization:** The active authorization key is automatically synchronized from the Encrypt screen.
+- **Auto-Populate:** If you encrypted a message on the Encrypt screen, switching to the Decrypt tab automatically pre-fills the Base64 ciphertext.
+- **Direction Selector:** Match the transmission direction used during encryption.
+- **Verify & Decrypt:** Tap the button to process. The SDK:
+  1. Validates that `auth_key_id` in the message header matches the active session key.
+  2. Derives directional AES-IGE keys.
+  3. Decrypts the ciphertext block-by-block.
+  4. Validates `msg_key` in **constant-time** (`MessageDigest.isEqual`).
+  5. Releases plaintext **only if** verification succeeds.
+- **Integrity Badge:** A verified confirmation displays when authentication succeeds, showing the exact number of stripped random padding bytes. If the ciphertext was tampered with by even one bit, a safe error is shown without exposing secret keys.
+
+### 3. Media Tab (Secret Chat Streaming Encryption)
+- **Select Media File:** Tap "Select Media File (SAF)" to open the Android Storage Access Framework system document picker. Select any photo, video, audio track, or document of any size (from kilobytes to gigabytes).
+- **File Metadata:** Displays original file name, formatted file size (Bytes, KB, MB, or GB), and MIME type.
+- **Encrypt Stream:** Tap "Encrypt Stream" to start streaming encryption:
+  - Generates an ephemeral random 256-bit media key and 256-bit media IV via `SecureRandom`.
+  - Streams the file in constant 64 KB memory chunks using AES-256-IGE without `OutOfMemoryError` risks.
+  - A real-time progress bar shows percentage and processed byte counts.
+  - Displays the generated Media Key, Media IV, and 64-bit key fingerprint.
+- **Cancel Operation:** Tap "Cancel Streaming Operation" at any time to abort the streaming job gracefully.
+- **Decrypt Stream:** Tap "Decrypt Stream" to decrypt the stored ciphertext stream back to its original unpadded format.
+- **Verification:** An integrity verification banner confirms that the decrypted file byte size and binary content match the original file 100%.
+
+### 4. Security Tab (Specifications & Architecture)
+- Displays reference cryptographic parameters:
+  - Symmetric Cipher: AES-256-IGE (Infinite Garble Extension)
+  - Key & IV Lengths: 256 bits each (32-byte key, 32-byte IV $y_0 \parallel x_0$)
+  - KDF: MTProto 2.0 SHA-256 directional derivation
+  - DH MODP Group: RFC 3526 Group 14 (2048-bit safe prime, generator 2)
+  - Padding Bounds: 12..1024 bytes random padding with 16-byte alignment
+  - Protocol Separation: Clear architectural distinction between MTProto transport layer encryption and Telegram Secret Chat media streaming encryption.
+
+---
+
 ## JitPack Installation
 
 The library is designed for distribution through JitPack as a multi-module Android Library (`mtproto-crypto`).
