@@ -206,8 +206,8 @@ Add the dependency to your application module's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    // Standard multi-module JitPack coordinate
-    implementation("com.github.gargpadmakar.MTProtoCrypto:mtproto-crypto:1.0.0")
+    // Verified JitPack coordinate
+    implementation("com.github.gargpadmakar:MTProtoCrypto:v1.0.0")
 }
 ```
 

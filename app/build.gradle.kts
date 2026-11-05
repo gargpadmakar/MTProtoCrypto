@@ -37,7 +37,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":mtproto-crypto"))
+    // Consuming published JitPack library
+    implementation("com.github.gargpadmakar:MTProtoCrypto:v1.0.0")
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
