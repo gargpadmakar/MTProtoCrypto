@@ -1,22 +1,27 @@
 package com.gargpadmakar.mtproto.crypto.di
 
 import com.gargpadmakar.mtproto.crypto.data.crypto.AesIgeCipher
+import com.gargpadmakar.mtproto.crypto.data.crypto.ApiCryptoEngine
 import com.gargpadmakar.mtproto.crypto.data.crypto.DhHandshakeEngine
 import com.gargpadmakar.mtproto.crypto.data.crypto.MTProtoKdf
 import com.gargpadmakar.mtproto.crypto.data.crypto.MediaCipher
 import com.gargpadmakar.mtproto.crypto.data.crypto.MessageCipher
+import com.gargpadmakar.mtproto.crypto.data.repository.MTProtoApiRepositoryImpl
 import com.gargpadmakar.mtproto.crypto.data.repository.MTProtoCipherRepositoryImpl
 import com.gargpadmakar.mtproto.crypto.data.repository.MTProtoHandshakeRepositoryImpl
 import com.gargpadmakar.mtproto.crypto.data.repository.MTProtoKdfRepositoryImpl
 import com.gargpadmakar.mtproto.crypto.data.repository.MTProtoMediaRepositoryImpl
+import com.gargpadmakar.mtproto.crypto.domain.repository.MTProtoApiRepository
 import com.gargpadmakar.mtproto.crypto.domain.repository.MTProtoCipherRepository
 import com.gargpadmakar.mtproto.crypto.domain.repository.MTProtoHandshakeRepository
 import com.gargpadmakar.mtproto.crypto.domain.repository.MTProtoKdfRepository
 import com.gargpadmakar.mtproto.crypto.domain.repository.MTProtoMediaRepository
 import com.gargpadmakar.mtproto.crypto.domain.usecase.CalculateMessageKeyUseCase
+import com.gargpadmakar.mtproto.crypto.domain.usecase.DecryptApiResponseUseCase
 import com.gargpadmakar.mtproto.crypto.domain.usecase.DecryptMediaUseCase
 import com.gargpadmakar.mtproto.crypto.domain.usecase.DecryptTextUseCase
 import com.gargpadmakar.mtproto.crypto.domain.usecase.DeriveAesKeyUseCase
+import com.gargpadmakar.mtproto.crypto.domain.usecase.EncryptApiRequestUseCase
 import com.gargpadmakar.mtproto.crypto.domain.usecase.EncryptMediaUseCase
 import com.gargpadmakar.mtproto.crypto.domain.usecase.EncryptTextUseCase
 import com.gargpadmakar.mtproto.crypto.domain.usecase.GenerateAuthorizationKeyUseCase
@@ -36,6 +41,7 @@ val cryptoModule: Module = module {
     single { DhHandshakeEngine(get()) }
     single { MessageCipher(get(), get(), get()) }
     single { MediaCipher(get(), get()) }
+    single { ApiCryptoEngine(get(), get(), get()) }
     single { KeyManager() }
 }
 
@@ -47,6 +53,7 @@ val repositoryModule: Module = module {
     single<MTProtoKdfRepository> { MTProtoKdfRepositoryImpl(get()) }
     single<MTProtoHandshakeRepository> { MTProtoHandshakeRepositoryImpl(get()) }
     single<MTProtoMediaRepository> { MTProtoMediaRepositoryImpl(get()) }
+    single<MTProtoApiRepository> { MTProtoApiRepositoryImpl(get()) }
 }
 
 /**
@@ -61,6 +68,8 @@ val useCaseModule: Module = module {
     factory { CalculateMessageKeyUseCase(get()) }
     factory { GenerateAuthorizationKeyUseCase(get()) }
     factory { ValidateDhParametersUseCase(get()) }
+    factory { EncryptApiRequestUseCase(get()) }
+    factory { DecryptApiResponseUseCase(get()) }
 }
 
 /**
@@ -71,4 +80,3 @@ val mtProtoSdkModules: List<Module> = listOf(
     repositoryModule,
     useCaseModule
 )
-

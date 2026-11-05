@@ -1,0 +1,22 @@
+{
+  "name": "mtproto-crypto-server",
+  "version": "1.0.0",
+  "description": "Node.js Server with MTProto 2.0 API Payload Encryption & Anti-Reverse-Engineering Protection",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test-client.js"
+  },
+  "keywords": [
+    "mtproto",
+    "encryption",
+    "aes-256-ige",
+    "reverse-engineering-protection",
+    "api-security"
+  ],
+  "author": "Padmakar Garg",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

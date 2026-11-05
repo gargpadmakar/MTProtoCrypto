@@ -30,6 +30,8 @@ Engineered with **Clean Architecture**, **MVVM**, the **UseCase Pattern**, **Rep
   - [3. MTProto 2.0 Text Message Decryption & Verification](#3-mtproto-20-text-message-decryption--integrity-verification)
   - [4. Secret Chat Media Streaming](#4-secret-chat-media-streaming-images-video-audio-docs)
   - [5. Diffie-Hellman 2048-bit Handshake](#5-diffie-hellman-handshake-2048-bit-modp-safe-prime)
+  - [6. End-to-End API Request Encryption & Response Decryption](#6-end-to-end-api-request-encryption--response-decryption)
+- [Node.js Backend Server & Anti-Reverse Engineering](#nodejs-backend-server--anti-reverse-engineering)
 - [Cryptographic Specifications & Protocol Separation](#cryptographic-specifications--protocol-separation)
 - [Security & Memory Safety](#security--memory-safety)
 - [Frequently Asked Questions (FAQ)](#frequently-asked-questions-faq)
@@ -71,6 +73,8 @@ MTProtoCrypto brings full MTProto 2.0 cryptographic capability to modern Android
 ---
 
 ## Architecture Diagram
+
+> *Tip: If you click on the diagram on GitHub to zoom, press `Esc` or click outside the preview box to close the full-screen modal.*
 
 ```mermaid
 graph TD
@@ -433,6 +437,73 @@ class HandshakeService : KoinComponent {
     }
 }
 ```
+
+### 6. End-to-End API Request Encryption & Response Decryption
+
+Encrypt any REST/JSON API request payload before transmission and authenticate/decrypt incoming responses:
+
+```kotlin
+import com.gargpadmakar.mtproto.crypto.domain.model.EncryptedApiPayload
+import com.gargpadmakar.mtproto.crypto.domain.usecase.DecryptApiResponseUseCase
+import com.gargpadmakar.mtproto.crypto.domain.usecase.EncryptApiRequestUseCase
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+
+class SecureApiClient : KoinComponent {
+    private val encryptApiRequestUseCase: EncryptApiRequestUseCase by inject()
+    private val decryptApiResponseUseCase: DecryptApiResponseUseCase by inject()
+
+    // Encrypts outgoing JSON API body (Client -> Server, x = 0)
+    suspend fun postSecureApi(jsonRequest: String, authKey: ByteArray): String {
+        val encryptedPayload = encryptApiRequestUseCase(
+            jsonText = jsonRequest,
+            authKey = authKey
+        ).getOrThrow()
+
+        // JSON string ready to send over HTTP as application/json
+        val requestBodyJson = encryptedPayload.toJson()
+        
+        // Transmit over HTTP via OkHttp / Retrofit...
+        val responseBodyJson = httpPost("https://api.yourserver.com/api/secure-data", requestBodyJson)
+
+        // Parse & decrypt server response (Server -> Client, x = 8)
+        val encryptedResponse = EncryptedApiPayload.fromJson(responseBodyJson)
+        val decryptedResponse = decryptApiResponseUseCase(
+            encrypted = encryptedResponse,
+            authKey = authKey,
+            maxClockSkewMs = 60000L // 60s replay protection
+        ).getOrThrow()
+
+        return decryptedResponse.utf8String // Authenticated plaintext JSON
+    }
+
+    private fun httpPost(url: String, jsonBody: String): String {
+        // Standard OkHttp / Retrofit call
+        return "{}"
+    }
+}
+```
+
+---
+
+## Node.js Backend Server & Anti-Reverse Engineering
+
+The SDK includes a complete, production-ready Node.js backend located in the `server/` directory:
+
+- `server/mtproto-crypto.js`: Pure Node.js implementation of MTProto 2.0 dual-directional KDF, AES-256-IGE chaining, and constant-time message authentication using standard Node.js `crypto`. Zero third-party cryptographic dependencies.
+- `server/server.js`: Express.js backend with `/api/auth/handshake` (ephemeral 2048-bit DH exchange) and `/api/secure-data` (request decryption & response encryption).
+- `server/test-client.js`: End-to-end verification script testing encryption, decryption, replay attack blocking, and tampering detection.
+
+### Why This Architecture Is Immune to Static Reverse Engineering
+
+| Attack Vector | Traditional Approach (Vulnerable) | MTProtoCrypto Approach (Secure) |
+| :--- | :--- | :--- |
+| **APK Decompilation (JADX / APKTool)** | Hardcoded AES key stored in `BuildConfig`, strings, or assets is extracted in seconds. | **Zero Static Keys:** Encryption keys are never baked into the APK. They are derived dynamically at runtime via 2048-bit Diffie-Hellman handshake over TLS. |
+| **Native Library Disassembly (IDA Pro / Ghidra)** | Static keys hidden inside C++ NDK `.so` binaries are found in `.rodata` or strings. | **Ephemeral Session Keys:** Memory holds only dynamic session state derived mathematically on-the-fly. No static secrets exist to decompile. |
+| **MITM Interception (Burp Suite / Charles Proxy)** | Custom CA certificates decrypt TLS traffic; unencrypted JSON is intercepted and altered. | **Application-Layer E2EE:** Payloads are pre-encrypted with AES-256-IGE before reaching the transport layer. Burp Suite only sees ciphertext and changing `msg_key`s. |
+| **Replay Attacks** | Attacker captures valid requests (e.g. money transfer) and resends them. | **Timestamp & Nonce Envelope:** Inner envelope embeds a 64-bit epoch timestamp and 128-bit cryptographic nonce. Stale or duplicate requests are rejected. |
+| **Memory Dump / Heap Analysis (Frida / Objection)** | Plaintext strings and keys linger in memory indefinitely. | **Memory Scrubbing:** Plaintext buffers and symmetric keys are zeroized immediately using `SecureBytes.wipe()` / `buffer.fill(0)`. |
+| **Dynamic Hooking Detection** | No detection for root or debugging tools. | **Built-in Anti-Tampering:** `AntiTampering.kt` provides active root detection, Frida memory injection detection, and debugger attachment monitoring. |
 
 ---
 
