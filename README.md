@@ -70,10 +70,10 @@ graph TD
         MRI[MTProtoMediaRepositoryImpl]
         
         MC[MessageCipher]
-        IGE[AesIgeCipher (AES-256-IGE)]
-        KDF[MTProtoKdf (SHA-256)]
-        DH[DhHandshakeEngine (2048-bit DH)]
-        MED[MediaCipher (Streaming AES-IGE)]
+        IGE["AesIgeCipher (AES-256-IGE)"]
+        KDF["MTProtoKdf (SHA-256)"]
+        DH["DhHandshakeEngine (2048-bit DH)"]
+        MED["MediaCipher (Streaming AES-IGE)"]
         
         CR -.-> CRI
         KR -.-> KRI
@@ -88,8 +88,8 @@ graph TD
     end
 
     subgraph Security ["Security Primitives"]
-        SB[SecureBytes (Zeroization & Constant-Time)]
-        KM[KeyManager (Thread-Safe Auth Store)]
+        SB["SecureBytes (Zeroization & Constant-Time)"]
+        KM["KeyManager (Thread-Safe Auth Store)"]
         MC --> SB
         IGE --> SB
         MED --> SB
