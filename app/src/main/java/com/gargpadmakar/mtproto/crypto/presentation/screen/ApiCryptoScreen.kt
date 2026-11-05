@@ -254,29 +254,62 @@ fun ApiCryptoScreen(
         }
 
         // Section: Security & Reverse-Engineering Live Tests
-        if (uiState.encryptedPayload != null) {
-            SectionHeader(title = "4. Anti-Reverse Engineering Tests")
+        SectionHeader(title = "4. Anti-Reverse Engineering Tests")
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            OutlinedButton(
+                onClick = { viewModel.testTamperDetection() },
+                modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(8.dp),
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
             ) {
-                OutlinedButton(
-                    onClick = { viewModel.testTamperDetection() },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
-                ) {
-                    Text(text = "Tamper Test", style = MaterialTheme.typography.labelMedium)
-                }
+                Text(text = "Tamper Test", style = MaterialTheme.typography.labelMedium)
+            }
 
-                OutlinedButton(
-                    onClick = { viewModel.testReplayAttackDetection() },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
-                ) {
-                    Text(text = "Replay Test", style = MaterialTheme.typography.labelMedium)
+            OutlinedButton(
+                onClick = { viewModel.testReplayAttackDetection() },
+                modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(8.dp),
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+            ) {
+                Text(text = "Replay Test", style = MaterialTheme.typography.labelMedium)
+            }
+        }
+
+        uiState.securityTestResult?.let { result ->
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (uiState.securityTestSuccess)
+                        MaterialTheme.colorScheme.primaryContainer
+                    else
+                        MaterialTheme.colorScheme.errorContainer
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = if (uiState.securityTestSuccess) "Security Test: Passed" else "Security Test: Failed",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = if (uiState.securityTestSuccess)
+                            MaterialTheme.colorScheme.onPrimaryContainer
+                        else
+                            MaterialTheme.colorScheme.onErrorContainer
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = result,
+                        style = MaterialTheme.typography.bodySmall,
+                        fontFamily = FontFamily.Monospace,
+                        color = if (uiState.securityTestSuccess)
+                            MaterialTheme.colorScheme.onPrimaryContainer
+                        else
+                            MaterialTheme.colorScheme.onErrorContainer
+                    )
                 }
             }
         }

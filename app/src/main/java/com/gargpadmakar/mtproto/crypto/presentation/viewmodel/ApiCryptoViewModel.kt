@@ -154,23 +154,39 @@ class ApiCryptoViewModel(
     }
 
     fun testTamperDetection() {
-        val original = _uiState.value.encryptedPayload ?: return
         viewModelScope.launch {
+            val payload = _uiState.value.encryptedPayload ?: run {
+                val autoEnc = encryptApiRequestUseCase(_uiState.value.requestJson, sessionAuthKey).getOrNull()
+                if (autoEnc == null) {
+                    _uiState.update {
+                        it.copy(
+                            securityTestResult = "Please enter valid JSON in the editor first.",
+                            securityTestSuccess = false
+                        )
+                    }
+                    return@launch
+                }
+                autoEnc
+            }
+
             try {
                 // Flip bits in ciphertext
-                val tamperedCiphertext = original.ciphertext.copyOf()
+                val tamperedCiphertext = payload.ciphertext.copyOf()
                 tamperedCiphertext[0] = (tamperedCiphertext[0].toInt() xor 0xFF).toByte()
-                val tampered = original.copy(ciphertext = tamperedCiphertext)
+                val tampered = payload.copy(ciphertext = tamperedCiphertext)
 
                 apiCryptoEngine.decryptRequest(tampered, sessionAuthKey)
                 _uiState.update {
-                    it.copy(statusMessage = "Tampering was not detected!", isError = true)
+                    it.copy(
+                        securityTestResult = "FAILED: Tampered packet was NOT detected!",
+                        securityTestSuccess = false
+                    )
                 }
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
-                        statusMessage = "Security Guard: Tampered packet rejected! (${e.javaClass.simpleName}: ${e.message})",
-                        isError = false
+                        securityTestResult = "Tamper Detection VERIFIED:\n${e.javaClass.simpleName}: ${e.message}\n\n1 byte flipped in ciphertext was immediately caught by constant-time SHA-256 msg_key verification! Packet was rejected.",
+                        securityTestSuccess = true
                     )
                 }
             }
@@ -183,7 +199,7 @@ class ApiCryptoViewModel(
                 // Encrypt payload with a timestamp 2 minutes in the past
                 val staleTimestamp = System.currentTimeMillis() - 120_000L
                 val staleEncrypted = apiCryptoEngine.encryptRequest(
-                    payload = "{\"action\":\"replayed_request\"}".toByteArray(),
+                    payload = "{\"action\":\"replayed_financial_tx\"}".toByteArray(Charsets.UTF_8),
                     authKey = sessionAuthKey,
                     timestamp = staleTimestamp
                 )
@@ -191,13 +207,16 @@ class ApiCryptoViewModel(
                 // Server with 30s replay window should reject
                 apiCryptoEngine.decryptRequest(staleEncrypted, sessionAuthKey, maxClockSkewMs = 30000L)
                 _uiState.update {
-                    it.copy(statusMessage = "Replay attack was not detected!", isError = true)
+                    it.copy(
+                        securityTestResult = "FAILED: Replay attack was NOT detected!",
+                        securityTestSuccess = false
+                    )
                 }
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
-                        statusMessage = "Security Guard: Replay attack blocked! (${e.message})",
-                        isError = false
+                        securityTestResult = "Replay Attack BLOCKED:\n${e.javaClass.simpleName}: ${e.message}\n\nPacket with 2-minute old timestamp was rejected by server clock-skew validation (< 30s)!",
+                        securityTestSuccess = true
                     )
                 }
             }

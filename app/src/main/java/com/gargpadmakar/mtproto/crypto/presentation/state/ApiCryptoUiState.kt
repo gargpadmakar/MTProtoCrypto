@@ -12,6 +12,7 @@ data class ApiCryptoUiState(
     val isLoading: Boolean = false,
     val authKeyIdHex: String = "",
     val serverResponseStatus: String? = null,
-    val isEnvironmentSafe: Boolean = true
+    val isEnvironmentSafe: Boolean = true,
+    val securityTestResult: String? = null,
+    val securityTestSuccess: Boolean = true
 )
-
