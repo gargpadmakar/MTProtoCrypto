@@ -98,30 +98,30 @@ graph TD
 
 ---
 
-## 🎯 Target Applications & Real-World Use Cases
+## Target Applications & Real-World Use Cases
 
 The **MTProtoCrypto SDK** is suitable for any Android application requiring Telegram-grade security, high-throughput symmetric encryption, traffic-analysis obfuscation, and zero-overhead large file streaming:
 
-### 1. 💬 End-to-End Encrypted (E2EE) Messaging Apps
+### 1. End-to-End Encrypted (E2EE) Messaging Apps
 - **Private 1-on-1 & Secret Chats:** Implement Telegram Secret Chat-grade encryption for text, ephemeral media, and attachments.
 - **Voice & Video Notes:** Stream-encrypt multimedia audio and video notes with per-file ephemeral 256-bit media keys.
 - **Custom Telegram Clients:** Build third-party Telegram clients, forks, or Telegram bot companions that communicate via official MTProto 2.0 transport encryption and DH authorization key exchange.
 
-### 2. 🔒 Secure File Vaults, Hidden Galleries & Media Lockers
+### 2. Secure File Vaults, Hidden Galleries & Media Lockers
 - **Private Photo & Video Vaults:** Encrypt private photo albums and high-resolution videos on-device using hardware-accelerated AES-256-IGE.
 - **Secret Document Safes:** Lock confidential PDFs, financial records, contracts, and identity scans.
 - **Constant-Memory Large File Support:** Stream-processes arbitrarily large files (from megabytes to multiple gigabytes) in 64 KB chunks without memory spikes or `OutOfMemoryError`.
 
-### 3. ☁️ Zero-Knowledge Cloud Storage & Secure Backups
+### 3. Zero-Knowledge Cloud Storage & Secure Backups
 - **Client-Side Pre-Upload Encryption:** Encrypt files and database backups on Android *before* uploading to Google Drive, AWS S3, Firebase, or custom servers.
 - **True Zero-Knowledge:** Even if remote servers or transmission networks are breached, the stored ciphertext cannot be decrypted without the client's local key.
 
-### 4. 🏥 FinTech, Healthcare & Enterprise Confidential Apps
+### 4. FinTech, Healthcare & Enterprise Confidential Apps
 - **FinTech & Banking Apps:** Protect payment receipts, bank statements, transaction logs, and customer credentials against network interception or rooted-device extraction.
 - **Telemedicine & Health Records:** Secure medical history, prescriptions, and biometric data in compliance with strict privacy standards (e.g. HIPAA, GDPR).
 - **Traffic Analysis Resistance:** MTProto 2.0 random padding (12 to 1024 bytes) obfuscates exact payload sizes, preventing adversaries from identifying message content or action types via packet size inspection.
 
-### 5. 🌐 Custom Client-Server & P2P Protocols
+### 5. Custom Client-Server & P2P Protocols
 - **P2P & Local Mesh Channels:** Establish authenticated, encrypted channels over Wi-Fi Direct, Bluetooth, or raw WebSockets using 2048-bit Diffie-Hellman key agreement without relying on external Certificate Authorities (CAs).
 
 ---
