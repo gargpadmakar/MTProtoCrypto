@@ -1,15 +1,18 @@
-# MTProtoCrypto: Telegram MTProto 2.0 Cryptographic SDK for Android
+# MTProtoCrypto: High-Performance MTProto 2.0 & AES-IGE Cryptographic SDK for Android
 
 [![JitPack](https://jitpack.io/v/gargpadmakar/MTProtoCrypto.svg)](https://jitpack.io/#gargpadmakar/MTProtoCrypto)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Android-green.svg)](https://developer.android.com)
 [![API](https://img.shields.io/badge/API-26%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=26)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.2.10-purple.svg)](https://kotlinlang.org)
+[![Author](https://img.shields.io/badge/Author-Padmakar%20Garg-blueviolet.svg)](https://github.com/gargpadmakar)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://github.com/gargpadmakar/MTProtoCrypto)
 
-**MTProtoCrypto** is a production-grade, high-performance, and thread-safe Android Kotlin cryptographic library implementing **Telegram MTProto 2.0 cryptographic primitives**, message encryption and decryption, 2048-bit Diffie-Hellman (DH) key exchange, and **Telegram Secret Chat media streaming encryption**.
+**MTProtoCrypto** is an independent, production-grade Android Kotlin cryptographic library developed by **Padmakar Garg**. It provides robust, thread-safe implementations of the **MTProto 2.0 cryptographic specification**, AES-256-IGE symmetric cipher, 2048-bit Diffie-Hellman (DH) key exchange, and high-speed **streaming media encryption** for secure communications and confidential storage.
 
 Engineered with **Clean Architecture**, **MVVM**, the **UseCase Pattern**, **Repository Pattern**, **Koin Dependency Injection**, and **Kotlin Coroutines**.
+
+> **Disclaimer:** MTProtoCrypto is an independent open-source library created and maintained by Padmakar Garg. It is not affiliated with, sponsored by, or endorsed by Telegram FZ-LLC. All protocol references denote mathematical and structural compatibility with the published MTProto 2.0 specification.
 
 ---
 
@@ -32,22 +35,23 @@ Engineered with **Clean Architecture**, **MVVM**, the **UseCase Pattern**, **Rep
 - [Frequently Asked Questions (FAQ)](#frequently-asked-questions-faq)
 - [Build & Testing Instructions](#build--testing)
 - [JitPack Release Checklist](#jitpack-release-checklist)
+- [Author & Support](#author--support)
 - [License](#license)
 
 ---
 
 ## Overview & Cryptographic Capabilities
 
-Telegram's MTProto 2.0 mobile security protocol provides state-of-the-art symmetric encryption, key derivation, and authenticated communication designed specifically for mobile networks with high latency and weak connections.
+The MTProto 2.0 mobile security protocol provides state-of-the-art symmetric encryption, key derivation, and authenticated communication designed specifically for mobile networks with high latency and weak connections.
 
-MTProtoCrypto brings full MTProto 2.0 cryptographic compatibility to modern Android applications without depending on native C/C++ NDK binaries:
+MTProtoCrypto brings full MTProto 2.0 cryptographic capability to modern Android applications without depending on native C/C++ NDK binaries:
 
 - **AES-256-IGE Symmetric Cipher:** Full implementation of Infinite Garble Extension dual-block feedback chaining ($c_i = E_K(m_i \oplus y_{i-1}) \oplus x_{i-1}$) using Bouncy Castle core primitives.
 - **MTProto 2.0 Key Derivation Function (KDF):** Directional SHA-256 derivation supporting Client-to-Server ($x=0$) and Server-to-Client ($x=8$) offsets.
 - **Message Integrity & Authentication:** Computes middle 128 bits of SHA-256 message keys (`msg_key`) with strict **constant-time verification** before releasing decrypted plaintext.
 - **Anti-Traffic Analysis Padding:** Conforms to MTProto 2.0 random padding specifications ($12 \le \text{padding} \le 1024$ bytes, 16-byte aligned) preventing eavesdroppers from deducing packet contents via payload length inspection.
 - **Diffie-Hellman Key Exchange:** 2048-bit MODP safe-prime authorization key agreement (RFC 3526 Group 14) with full subgroup and generator validation.
-- **Telegram Secret Chat Media Encryption:** Ephemeral 256-bit media key and IV generation with 64-bit key fingerprints.
+- **Secret Chat Media Encryption:** Ephemeral 256-bit media key and IV generation with 64-bit key fingerprints.
 - **Large File Streaming:** Constant 64 KB memory chunk streaming supporting arbitrarily large files (photos, videos, audio, documents) without heap allocations or `OutOfMemoryError`.
 
 ---
